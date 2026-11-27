@@ -10,16 +10,125 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "PDF PageRebind", "operatingSystem": "macOS, iOS, iPadOS", "applicationCategory": "UtilitiesApplication", "description": "PDF の結合・並べ替え・回転・抜き出しを、ページを見ながら。両面スキャンも交互に合わせます。", "url": "https://emchs07-prog.github.io/pdfpageworkshop-support/", "author": {"@type": "Person", "name": "Hideki Sato", "url": "https://emchs07-prog.github.io/"}, "downloadUrl": "https://apps.apple.com/jp/app/id6812512515"}</script>
 <!-- 検索向けの設定（ここまで） -->
 <style>
-  :root { color-scheme: light dark; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
-    max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; line-height: 1.8;
+  :root {
+    color-scheme: light dark;
+    --bg:#ffffff; --bg2:#f5f7fb; --card:#ffffff; --text:#14171f; --mute:#5b6475; --line:#e3e7ef;
+    --accent:#c8453b; --accent2:#e8873a; --code:#0b0d12; --codetext:#e8ecf3; --shadow:0 10px 30px rgba(20,30,60,.08);
   }
-  h1 { border-bottom: 3px solid #3B82F6; padding-bottom: .4rem; }
-  h2 { margin-top: 2.5rem; color: #3B82F6; }
-  footer { margin-top: 4rem; font-size: .85rem; opacity: .7; }
-  a { color: #2563EB; }
-  dt { font-weight: bold; margin-top: 1rem; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0b0d12; --bg2:#11151d; --card:#151a23; --text:#e9edf5; --mute:#9aa4b6; --line:#232a36;
+            --accent:#ff8a7a; --accent2:#ffb36b; --shadow:0 10px 30px rgba(0,0,0,.35); }
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; scroll-padding-top:72px; }
+  body { margin:0; background:var(--bg); color:var(--text); line-height:1.8;
+         font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+         -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); }
+  img { max-width:100%; height:auto; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+  /* 上の帯 */
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:saturate(180%) blur(14px); -webkit-backdrop-filter:saturate(180%) blur(14px);
+         background:color-mix(in srgb, var(--bg) 82%, transparent); border-bottom:1px solid var(--line); }
+  .top .wrap { display:flex; align-items:center; gap:16px; height:56px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; text-decoration:none; color:var(--text); white-space:nowrap; }
+  .brand img { width:28px; height:28px; border-radius:7px; }
+  .top nav { margin-left:auto; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; }
+  .top nav a { color:var(--mute); text-decoration:none; font-size:.88rem; padding:6px 10px; border-radius:8px; white-space:nowrap; }
+  .top nav a:hover { color:var(--text); background:var(--bg2); }
+  /* 先頭 */
+  .hero { position:relative; overflow:hidden; text-align:center; padding:72px 0 40px; }
+  .hero::before { content:""; position:absolute; inset:-30% -10% auto; height:120%; z-index:-1; filter:blur(20px);
+    background:radial-gradient(40% 45% at 30% 35%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+               radial-gradient(35% 40% at 72% 30%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 70%); }
+  .hero .icon { width:112px; height:112px; border-radius:25px; box-shadow:var(--shadow); }
+  .hero h1 { font-size:clamp(2.4rem, 6vw, 3.6rem); line-height:1.15; margin:20px 0 4px; letter-spacing:-.01em; font-weight:800; }
+  .hero .yomi { color:var(--mute); font-size:.9rem; margin:0; }
+  .hero .sub { font-size:clamp(1.15rem, 2.6vw, 1.5rem); font-weight:700; margin:14px 0 10px;
+    background:linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero .lead { max-width:36em; margin:0 auto; color:var(--mute); }
+  .chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:20px 0 0; padding:0; list-style:none; }
+  .chips li { font-size:.82rem; font-weight:600; color:var(--mute); border:1px solid var(--line); background:var(--card); border-radius:999px; padding:3px 12px; }
+  .btns { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin:28px 0 0; }
+  .btn { display:inline-flex; align-items:center; gap:8px; font-weight:700; text-decoration:none; border-radius:12px; padding:12px 22px; }
+  .btn.primary { background:var(--text); color:var(--bg); }
+  .btn.ghost { border:1px solid var(--line); color:var(--text); background:var(--card); }
+  .btn:hover { opacity:.88; }
+  .shot-hero { margin:48px auto 0; max-width:960px; }
+  .shot-hero img, .gallery img { display:block; width:100%; border-radius:12px; border:1px solid var(--line); box-shadow:var(--shadow); }
+  .note { max-width:44em; margin:28px auto 0; font-size:.88rem; color:var(--mute); text-align:center; }
+  /* 節 */
+  section.block { padding:64px 0; }
+  section.block.alt { background:var(--bg2); }
+  .eyebrow { display:block; text-align:center; font-size:.78rem; font-weight:700; letter-spacing:.12em; color:var(--accent); margin:0 0 6px; }
+  h2 { text-align:center; font-size:clamp(1.5rem, 3.4vw, 2rem); line-height:1.35; margin:0 0 12px; }
+  .intro { text-align:center; color:var(--mute); max-width:38em; margin:0 auto 36px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px 22px 18px; }
+  .card .ic { display:inline-grid; place-items:center; width:40px; height:40px; border-radius:11px; font-size:1.2rem;
+              background:color-mix(in srgb, var(--accent) 14%, transparent); }
+  .card h3 { font-size:1.06rem; margin:12px 0 6px; line-height:1.5; }
+  .card p { margin:0; color:var(--mute); font-size:.94rem; }
+  .card .tag { display:inline-block; font-size:.72rem; font-weight:700; color:var(--accent2); margin-left:6px; vertical-align:2px; }
+  .codes { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:28px 0 0; padding:0; list-style:none; }
+  .codes li { font-family:Menlo, ui-monospace, monospace; font-size:.85rem; background:var(--code); color:var(--codetext); border-radius:8px; padding:4px 12px; }
+  /* 画面 */
+  .gallery { display:grid; grid-auto-flow:column; grid-auto-columns:min(82%, 720px); gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 4px 16px; }
+  .gallery figure { margin:0; scroll-snap-align:center; }
+  .gallery.phone { grid-auto-columns:min(56%, 240px); }
+  .gallery figcaption { font-size:.88rem; color:var(--mute); margin-top:10px; text-align:center; }
+  .gallery-label { font-weight:700; margin:32px 0 12px; }
+  /* 使い方 */
+  .how { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px; }
+  .how .card h3 { margin-top:0; font-size:1.15rem; }
+  .how ol { margin:0; padding-left:1.3em; }
+  .how li { margin:0 0 8px; }
+  kbd { font-family:-apple-system, sans-serif; font-size:.82em; border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:0 6px; background:var(--bg2); }
+  .md-list { max-width:760px; margin:0 auto; padding-left:1.3em; }
+  .md-list li { margin:0 0 10px; }
+  .for { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; max-width:860px; margin:0 auto; padding:0; list-style:none; }
+  .for li { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; font-weight:600; }
+  .for li::before { content:"✓"; color:var(--accent); margin-right:8px; }
+  /* よくある質問 */
+  .faq { max-width:780px; margin:0 auto; }
+  .faq details { background:var(--card); border:1px solid var(--line); border-radius:14px; margin:0 0 10px; }
+  .faq summary { cursor:pointer; list-style:none; padding:16px 48px 16px 20px; font-weight:700; position:relative; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.3rem; color:var(--mute); }
+  .faq details[open] summary::after { content:"−"; }
+  .faq .a { padding:0 20px 16px; color:var(--mute); }
+  .faq .a p { margin:0 0 8px; }
+  /* お問い合わせ */
+  .contact { max-width:640px; margin:0 auto; text-align:center; }
+  .contact .card { padding:28px; }
+  .contact p { margin:0 0 10px; }
+  .other-apps { max-width:780px; margin:0 auto !important; padding:56px 24px 0; }
+  .other-apps h2 { margin-bottom:4px; }
+  .other-apps > p { text-align:center; }
+  .other-apps ul { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:4px 20px; }
+  .other-apps li { line-height:1.5; }
+  footer { text-align:center; color:var(--mute); font-size:.85rem; padding:40px 24px 56px; margin-top:56px; border-top:1px solid var(--line); }
+  @media (max-width:640px) { .top nav { display:none; } .hero { padding-top:48px; } section.block { padding:48px 0; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+  .en { padding-top:24px; }
+  .en-sep { border:0; border-top:1px solid var(--line); margin:64px 0 0; }
+  .en .how { grid-template-columns:1fr; max-width:780px; margin:0 auto; }
+  .keys { display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr)); gap:16px; align-items:start; }
+  .keys h3 { margin:0 0 10px; font-size:1.05rem; }
+  .keys table { width:100%; border-collapse:collapse; font-size:.92rem; }
+  .keys th { text-align:left; white-space:nowrap; padding:6px 14px 6px 0; vertical-align:top; font-weight:400; }
+  .keys td { padding:6px 0; color:var(--mute); border-bottom:1px solid var(--line); }
+  .keys tr:last-child td { border-bottom:0; }
+  .keys-note { text-align:center; color:var(--mute); font-size:.9rem; margin:20px auto 0; max-width:44em; }
+  @media (max-width:640px) { .keys { grid-template-columns:1fr; } }
+  .notecard { display:block; text-align:left; text-decoration:none; color:var(--text); transition:transform .15s ease; }
+  .notecard:hover { transform:translateY(-2px); }
+  .nc-site { display:inline-block; font-size:.75rem; font-weight:700; color:var(--bg); background:var(--text); border-radius:6px; padding:1px 8px; }
+  .nc-title { display:block; font-weight:700; font-size:1.1rem; line-height:1.5; margin:10px 0 6px; }
+  .nc-lead { display:block; color:var(--mute); font-size:.92rem; }
+  .nc-go { display:block; color:var(--accent); font-weight:700; margin-top:10px; }
+  .more { max-width:860px; margin:0 auto; padding-left:1.3em; }
+  .more li { margin:0 0 10px; }
 </style>
 <!-- リンクを貼ったときに出る紹介カード（OGP） -->
 <meta property="og:type" content="website">
@@ -32,12 +141,66 @@
 <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
-<h1>PDF PageRebind</h1>
-<p class="og-card"><img src="og.png" alt="PDF PageRebindの紹介" width="1200" height="630" style="display:block;width:100%;max-width:720px;height:auto;border-radius:12px;margin:12px 0 24px;"></p>
-<p>PDF PageRebindは、PDF の「ページの手直し」だけに絞ったアプリです。サムネイルを見ながらページを並べ替え、回転し、削除し、別の PDF や写真からページを追加して保存します。文字や図の中身には手を付けません。Mac・iPhone・iPad で使えます（ユニバーサル購入。一度買えば両方で使えます）。</p>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#"><img src="img/icon.png" alt="" width="28" height="28">PDF PageRebind</a>
+  <nav aria-label="ページ内の移動"><a href="#features">特長</a><a href="#screens">画面</a><a href="#howto">使い方</a><a href="#more">そのほかの機能</a><a href="#faq">よくある質問</a><a href="#contact">お問い合わせ</a></nav>
+</div></header>
 
-<h2>使い方（Mac）</h2>
-<ol>
+<main>
+<section class="hero"><div class="wrap">
+  <img class="icon" src="img/icon.png" alt="PDF PageRebind のアイコン" width="112" height="112">
+  <h1>PDF PageRebind</h1>
+  <p class="sub">PDF のページを、見ながら組み直す。</p>
+  <p class="lead">PDF の「ページの手直し」だけに絞ったアプリです。サムネイルを見ながら、ページを並べ替え・回転・削除し、別の PDF や写真からページを足して保存します。文字や図の中身には手を付けません。</p>
+  <ul class="chips"><li>Mac</li><li>iPhone</li><li>iPad</li><li>一度の購入で全部の端末に</li><li>通信なし・データの収集なし</li></ul>
+  <div class="btns">
+    <a class="btn primary" href="https://apps.apple.com/jp/app/id6812512515">App Store で見る</a>
+    <a class="btn ghost" href="#howto">使い方を見る</a>
+  </div>
+  <figure class="shot-hero" style="margin-left:auto;margin-right:auto;"><img src="img/mac-02.jpg" alt="Mac の PDF PageRebind。左にページのサムネイル、右に選んだページを大きく表示" width="1600" height="1000"></figure>
+</div></section>
+
+<section class="block alt" id="features"><div class="wrap">
+  <span class="eyebrow">FEATURES</span>
+  <h2>ページの手直しに、ちょうどいい</h2>
+  <p class="intro">結合・並べ替え・回転・抜き出し。PDF を作り直さずに、ページの順番と向きだけを整えたいときのための道具です。</p>
+  <div class="grid">
+    <div class="card"><span class="ic" aria-hidden="true">🔀</span><h3>見ながら並べ替え</h3><p>サムネイルをドラッグして、落とした所の前へ移動。複数を選んでまとめて動かせます。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">🔄</span><h3>回転・削除・複製</h3><p>左右に90度、180度の回転、削除、複製、空白ページの挿入、全ページの逆順。右クリック（長押し）のメニューからも。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">➕</span><h3>結合と写真の取り込み</h3><p>「追加」で別の PDF や写真（JPEG・PNG・HEIC）を選ぶと、選んだページの後ろへ。写真は A4 に収めて1ページに。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">✂️</span><h3>抜き出しと画像の書き出し</h3><p>選んだページだけを別の PDF に。ページを JPEG 画像にも書き出せます（iPhone・iPad は写真アプリへも）。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">🖨️</span><h3>両面スキャンを交互に</h3><p>表と裏で別々になったスキャンを、表1・裏1・表2…の順に合わせます。裏を逆順で読んだ場合にも対応。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">📑</span><h3>今の並びのまま印刷</h3><p>全ページ、選んだページ、「1-3, 7」のような番号の指定から選んで印刷できます。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">🗂️</span><h3>複数の書類をタブで</h3><p>複数の PDF を開いておけて、ページを別の書類へ写せます。元の書類はそのまま。</p></div>
+    <div class="card"><span class="ic" aria-hidden="true">↩️</span><h3>何段階でも取り消せる</h3><p>保存するまで元のファイルには書き込みません。間違えても、何段階でも元に戻せます。</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="screens"><div class="wrap">
+  <span class="eyebrow">SCREENS</span>
+  <h2>画面</h2>
+  <p class="intro">横にすべらせると、ほかの画面も見られます。</p>
+  <p class="gallery-label">Mac</p>
+  <div class="gallery">
+    <figure><img src="img/mac-01.jpg" alt="" width="1600" height="1000" loading="lazy"><figcaption>複数の書類をタブで開く</figcaption></figure>
+    <figure><img src="img/mac-02.jpg" alt="" width="1600" height="1000" loading="lazy"><figcaption>左に一覧、右に選んだページ</figcaption></figure>
+    <figure><img src="img/mac-03.jpg" alt="" width="1600" height="1000" loading="lazy"><figcaption>複数のページを選んで、まとめて回転</figcaption></figure>
+    <figure><img src="img/mac-04.jpg" alt="" width="1600" height="1000" loading="lazy"><figcaption>右クリックのメニューからも操作</figcaption></figure>
+  </div>
+  <p class="gallery-label">iPhone</p>
+  <div class="gallery phone">
+    <figure><img src="img/iphone-01.jpg" alt="" width="552" height="1200" loading="lazy"><figcaption>ページの一覧</figcaption></figure>
+    <figure><img src="img/iphone-02.jpg" alt="" width="552" height="1200" loading="lazy"><figcaption>選んで回転</figcaption></figure>
+    <figure><img src="img/iphone-03.jpg" alt="" width="552" height="1200" loading="lazy"><figcaption>ビューワーとして読む</figcaption></figure>
+  </div>
+</div></section>
+
+<section class="block alt" id="howto"><div class="wrap">
+  <span class="eyebrow">HOW TO</span>
+  <h2>使い方</h2>
+  <p class="intro">開いて、選んで、整えて、保存。</p>
+  <div class="how">
+    <div class="card"><h3>Mac</h3><ol>
   <li>「開く」（⌘O）で PDF を選ぶか、ウインドウに PDF をドロップします。Finder でダブルクリックしても開けます。</li>
   <li>左の一覧でページをクリックして選びます。⌘クリックで追加、shift クリックで範囲、⌘A で全部。右側に選んだページが大きく表示されます。</li>
   <li>ページをドラッグして別のページの上に落とすと、その前に移動します。複数選んでいればまとめて動きます。</li>
@@ -45,10 +208,8 @@
   <li>「追加」で別の PDF や画像を選ぶと、選択中のページの後ろに差し込まれます。</li>
   <li>「上書き保存」（⌘S）で元のファイルに書き戻します。別のファイルにしたいときは「別名で保存」（⇧⌘S）。</li>
   <li>複数の PDF はウインドウのタブで開きます（空のタブはファイルメニューの「新しいタブ」、⌘T）。ページのサムネイルを別のタブへドラッグし、タブの上で少し止めるとそのタブに切り替わります。好きな位置に落とすと、ページがその書類へ写ります。元の書類はそのままです。</li>
-</ol>
-
-<h2>使い方（iPhone / iPad）</h2>
-<ol>
+</ol></div>
+    <div class="card"><h3>iPhone・iPad</h3><ol>
   <li>左上のフォルダのボタンで、「ファイル」アプリにある PDF（本体・iCloud Drive・外付けストレージ）を選びます。「ファイル」アプリで PDF を長押しして共有からこのアプリを選んでも開けます。</li>
   <li>ページをタップして選びます（もう一度タップで解除）。iPad では右側に選んだページが大きく表示されます。iPhone では長押しメニューの「拡大表示」で確かめられます。</li>
   <li>ページを長押ししてからドラッグし、別のページの上に落とすと、その前に移動します。</li>
@@ -56,10 +217,14 @@
   <li>「追加」で別の PDF や写真を選ぶと、選択中のページの後ろに差し込まれます。</li>
   <li>左上の「保存」から「上書き保存」で元のファイルに書き戻します。「別名で保存」で保存先を選べます。右上の共有ボタンでメールや AirDrop に渡せます。</li>
   <li>複数の PDF を開いておけます。iPad は画面の上にタブが並び、押して切り替えます。iPhone と iPad の両方で、画面上部のファイル名を押すと開いている書類の一覧が出ます。ページを長押しして「他の書類へコピー」を選ぶと、別の書類の先頭・末尾・指定した位置へページを写せます。</li>
-</ol>
+</ol></div>
+  </div>
+</div></section>
 
-<h2>そのほかの機能</h2>
-<ul>
+<section class="block" id="more"><div class="wrap">
+  <span class="eyebrow">MORE</span>
+  <h2>そのほかの機能</h2>
+  <ul class="more">
   <li>すべて選択、奇数ページだけ・偶数ページだけの選択、「1-3, 7」のような範囲指定（Mac はボタン列の「その他」、iPhone / iPad は下のバーの「その他」）。</li>
   <li>選んだページだけを別の PDF に書き出す「抜き出し」。</li>
   <li>ビューワーとして読む。開くと 1 ページ目を大きく表示し、右側の下のバーでページ移動と倍率の変更ができます（高さに合わせる・横幅に合わせる・全体）。左の一覧は「一覧」ボタンで隠せます。iPhone は一覧とビューワーを切り替えて使います。</li>
@@ -69,30 +234,33 @@
   <li>今の並びと向きのままの印刷（Mac はボタン列の「印刷」、iPhone / iPad は右上のプリンタのボタン）。全ページ・選んだページ・「1-3, 7」のように番号で指定したページから選べます。番号は今の並びで数えます。</li>
   <li>変更は何段階でも取り消せます（Mac は ⌘Z、iPhone / iPad は右上の矢印ボタン）。</li>
 </ul>
+</div></section>
 
-<h2>よくある質問</h2>
-<dl>
-  <dt>Q. 保存したら元のファイルはどうなりますか？</dt>
-  <dd>A. 「上書き保存」は開いたファイルそのものを書き換えます。元を残したいときは「別名で保存」で別のファイルにしてください。保存するまでは元のファイルに一切書き込みません。</dd>
-  <dt>Q. ページの中の文字を直せますか？</dt>
-  <dd>A. できません。このアプリはページ単位の操作（並べ替え・回転・削除・追加）に絞っています。文字や図の中身は変えず、そのまま保ちます。</dd>
-  <dt>Q. 複数の PDF を1つにまとめたい</dt>
-  <dd>A. 1つ目を開き、「追加」で残りを選んでください。選んだ PDF の全ページが、選択中のページの後ろ（何も選んでいなければ末尾）に入ります。あとは「別名で保存」で1つのファイルになります。</dd>
-  <dt>Q. 両面スキャンで、表のページと裏のページが別々になりました</dt>
-  <dd>A. 表のファイルを開き、「その他」の「両面スキャンを交互に合わせる」から「この書類が表、別の PDF が裏」の項目を選んで、裏のファイルを選んでください。表1・裏1・表2・裏2という順に並び直します。束を裏返して裏を読ませた場合は裏が最後のページから並んでいるので「裏面を逆順で読み取った」を、1枚目から読ませた場合は「裏面も 1 枚目から読み取った」を選びます。違っていたら取り消して、もう一方を選んでください。表と裏が1つのファイルに続けて入っている場合は「この書類の前半が表、後半が裏」の項目を使います。</dd>
-  <dt>Q. 写真を PDF のページにできますか？</dt>
-  <dd>A. できます。「追加」で JPEG・PNG・HEIC を選ぶと、1枚が1ページになります。A4 の紙に収め、写真の向きは自動で直します。</dd>
-  <dt>Q. パスワード付きの PDF は開けますか？</dt>
-  <dd>A. 開くときにパスワードを聞きます。保存すると、パスワードは外れた状態で保存されます。</dd>
-  <dt>Q. iPhone / iPad で「別名で保存」したあと、続けて編集すると元のファイルに書き込まれますか？</dt>
-  <dd>A. はい。「別名で保存」は写しを書き出すだけで、編集対象は開いたファイルのままです。写しを編集したいときは、そのファイルを開き直してください。</dd>
-  <dt>Q. Mac で共有ボタンが見当たりません</dt>
-  <dd>A. Mac 版には共有ボタンがありません。「別名で保存」してから Finder で共有してください。</dd>
-</dl>
+<section class="block alt" id="faq"><div class="wrap">
+  <span class="eyebrow">FAQ</span>
+  <h2>よくある質問</h2>
+  <div class="faq">
+    <details><summary>保存したら元のファイルはどうなりますか？</summary><div class="a"><p>「上書き保存」は開いたファイルそのものを書き換えます。元を残したいときは「別名で保存」で別のファイルにしてください。保存するまでは元のファイルに一切書き込みません。</p></div></details>
+    <details><summary>ページの中の文字を直せますか？</summary><div class="a"><p>できません。このアプリはページ単位の操作（並べ替え・回転・削除・追加）に絞っています。文字や図の中身は変えず、そのまま保ちます。</p></div></details>
+    <details><summary>複数の PDF を1つにまとめたい</summary><div class="a"><p>1つ目を開き、「追加」で残りを選んでください。選んだ PDF の全ページが、選択中のページの後ろ（何も選んでいなければ末尾）に入ります。あとは「別名で保存」で1つのファイルになります。</p></div></details>
+    <details><summary>両面スキャンで、表のページと裏のページが別々になりました</summary><div class="a"><p>表のファイルを開き、「その他」の「両面スキャンを交互に合わせる」から「この書類が表、別の PDF が裏」の項目を選んで、裏のファイルを選んでください。表1・裏1・表2・裏2という順に並び直します。束を裏返して裏を読ませた場合は裏が最後のページから並んでいるので「裏面を逆順で読み取った」を、1枚目から読ませた場合は「裏面も 1 枚目から読み取った」を選びます。違っていたら取り消して、もう一方を選んでください。表と裏が1つのファイルに続けて入っている場合は「この書類の前半が表、後半が裏」の項目を使います。</p></div></details>
+    <details><summary>写真を PDF のページにできますか？</summary><div class="a"><p>できます。「追加」で JPEG・PNG・HEIC を選ぶと、1枚が1ページになります。A4 の紙に収め、写真の向きは自動で直します。</p></div></details>
+    <details><summary>パスワード付きの PDF は開けますか？</summary><div class="a"><p>開くときにパスワードを聞きます。保存すると、パスワードは外れた状態で保存されます。</p></div></details>
+    <details><summary>iPhone / iPad で「別名で保存」したあと、続けて編集すると元のファイルに書き込まれますか？</summary><div class="a"><p>はい。「別名で保存」は写しを書き出すだけで、編集対象は開いたファイルのままです。写しを編集したいときは、そのファイルを開き直してください。</p></div></details>
+    <details><summary>Mac で共有ボタンが見当たりません</summary><div class="a"><p>Mac 版には共有ボタンがありません。「別名で保存」してから Finder で共有してください。</p></div></details>
+  </div>
+</div></section>
 
-<h2>お問い合わせ</h2>
-<p>不具合のご報告やご要望は <a href="mailto:emc.hs07@gmail.com">emc.hs07@gmail.com</a> までお寄せください。</p>
-<p><a href="privacy.html">プライバシーポリシー</a></p>
+<section class="block" id="contact"><div class="wrap contact">
+  <span class="eyebrow">CONTACT</span>
+  <h2>お問い合わせ</h2>
+  <div class="card">
+    <p>不具合のご報告やご要望は、メールでお気軽にどうぞ。</p>
+    <p><a class="btn ghost" href="mailto:emc.hs07@gmail.com">emc.hs07@gmail.com</a></p>
+    <p style="font-size:.9rem;color:var(--mute);margin:14px 0 0;">PDF PageRebind は外部と通信せず、データを集めません。くわしくは <a href="privacy.html">プライバシーポリシー</a> をご覧ください。</p>
+  </div>
+</div></section>
+</main>
 
 <!-- この作者のほかのアプリ（ここから） -->
 <section class="other-apps" style="margin-top:3rem;">
